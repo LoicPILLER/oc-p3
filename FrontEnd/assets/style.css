@@ -28,8 +28,16 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+
+:root {
+	--main-bg-color: rgb(255,254,249);
+	--primary-color: #B1663C;
+	--secondary-color: #1D6154;
+}
+
 body {
 	line-height: 1;
+	background-color: var(--main-bg-color);
 }
 ol, ul {
 	list-style: none;
@@ -68,7 +76,7 @@ h1{
 	font-family: 'Syne';
 	font-size: 22px;
 	font-weight: 800;
-	color: #B1663C
+	color: var(--primary-color)
 }
 
 h1 > span {
@@ -82,7 +90,7 @@ h2{
 	font-family: 'Syne';
 	font-weight: 700;
 	font-size: 30px;
-	color: #1D6154
+	color: var(--secondary-color)
 }
 nav ul {
 	display: flex;
@@ -95,9 +103,11 @@ nav li {
 	font-size: 1.2em;
 }
 
-li:hover {
-	color: #B1663C;
+nav li a {
+	text-decoration: none;
+	color: black;
 }
+
 #introduction {
 	display: flex;
 	align-items: center;
@@ -136,15 +146,15 @@ li:hover {
 .filters-container button {
 	padding: 0.75em 1em;
 	border-radius: 30px;
-	color: #1D6154;
-	background-color: white;
+	color: var(--secondary-color);
+	background-color: var(--main-bg-color);
 	cursor: pointer;
-	border: 1px solid #1D6154;
+	border: 1px solid var(--secondary-color);
 }
 
 #active-filter {
-	color: white;
-	background-color: #1D6154;
+	color: var(--main-bg-color);
+	background-color: var(--secondary-color);
 }
 
 .gallery {
@@ -161,32 +171,36 @@ li:hover {
 }
 #contact {
 	width: 50%;
-margin: auto;
+	margin: auto;
 }
+
 #contact > * {
 	text-align: center;
 
 }
+
 #contact h2{
 	margin-bottom: 20px;
 }
-#contact form {
+
+form {
 	text-align: left;
 	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
 
-#contact input {
+input {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-#contact label {
+label {
 	margin: 2em 0 1em 0;
 }
-#contact textarea {
+
+textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
@@ -195,7 +209,7 @@ input[type="submit"]{
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
-	background-color: #1D6154;
+	background-color: var(--secondary-color);
 	margin : 2em auto ;
 	width: 180px;
 	text-align: center;
@@ -208,3 +222,18 @@ footer nav ul {
 	margin: 2em
 }
 
+#login {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#login form {
+	display: flex;
+	flex-direction: column;
+	width: 35%;
+}
+
+#login input[type=email],  #login input[type=password]{
+	padding-left: 15px;
+}

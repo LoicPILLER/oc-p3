@@ -12,7 +12,7 @@ async function initCategories(){
 
     let n = 1;
     categories.forEach((category) => {
-        const filterButton = document.createElement("button");
+        let filterButton = document.createElement("button");
         filterButton.setAttribute('data-id', n);
         filterButton.innerText = categories[n-1].name;
 
@@ -31,13 +31,13 @@ async function displayWorks(categoryId = 0){
 
     DGALLERY.innerHTML = '';
     works.forEach((work) => {
-        const figure = document.createElement("figure");
+        let figure = document.createElement("figure");
 
-        const img = document.createElement("img");
+        let img = document.createElement("img");
         img.src = work.imageUrl;
         img.alt = work.title;
 
-        const caption = document.createElement("figcaption");
+        let caption = document.createElement("figcaption");
         caption.innerText = work.title;
 
         figure.appendChild(img);
