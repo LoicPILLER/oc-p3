@@ -51,6 +51,11 @@ function initPage(){
     FILTERS.addEventListener('click', function (e){
         let categoryId = e.target.dataset.id;
         if (categoryId === undefined) return;
+
+        let activeFilter = document.getElementById('active-filter');
+        activeFilter.removeAttribute('id');
+
+        e.target.id = 'active-filter';
         displayWorks(parseInt(categoryId));
     })
 }
