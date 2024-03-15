@@ -1,13 +1,17 @@
 const APIURL = "http://localhost:5678/api";
 
-const DGALLERY = document.querySelector("#portfolio > .gallery")
-const FILTERS = document.querySelector("#portfolio > .filters-container")
+const DEDITBANNER = document.getElementById('edit-banner');
+const DHEADER = document.querySelector('header');
+const DLOGIN = document.getElementById('login');
+const DFILTERS = document.querySelector("#portfolio > .filters-container");
+const DGALLERY = document.querySelector("#portfolio > .gallery");
+
 async function getJson(url) {
     const response = await fetch(url);
     return await response.json();
 }
 
-async function initCategories(){
+async function displayCategories(){
     let categories = await getJson(APIURL + "/categories");
 
     let n = 1;
@@ -16,7 +20,7 @@ async function initCategories(){
         filterButton.setAttribute('data-id', n);
         filterButton.innerText = categories[n-1].name;
 
-        FILTERS.appendChild(filterButton);
+        DFILTERS.appendChild(filterButton);
 
         n += 1;
     })
@@ -48,7 +52,10 @@ async function displayWorks(categoryId = 0){
 }
 
 function initPage(){
-    FILTERS.addEventListener('click', function (e){
+    displayWorks();
+    displayCategories();
+
+    DFILTERS.addEventListener('click', function (e){
         let categoryId = e.target.dataset.id;
         if (categoryId === undefined) return;
 
@@ -58,8 +65,29 @@ function initPage(){
         e.target.id = 'active-filter';
         displayWorks(parseInt(categoryId));
     })
+
+    if (localStorage.getItem('token')){
+        DEDITBANNER.classList.remove('d-none');
+        DHEADER.style.marginTop = '80px';
+        DLOGIN.innerText = 'logout';
+        DLOGIN.addEventListener('click', function (e){
+            e.preventDefault();
+            localStorage.clear();
+            document.location.reload();
+        })
+
+        const dModal = document.querySelector('.modal');
+
+        const dModalStartBtn = document.getElementById('modal-open-btn');
+        dModalStartBtn.addEventListener('click', function (e){
+            dModal.classList.remove('d-none');
+        })
+
+        const dModalCloseBtn = document.getElementById('modal-close-btn');
+        dModalCloseBtn.addEventListener('click', function (e){
+            dModal.classList.add('d-none');
+        })
+    }
 }
 
-displayWorks();
-initCategories();
 initPage()
