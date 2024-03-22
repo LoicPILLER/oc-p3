@@ -44,7 +44,7 @@
 	</section>
 	<section id="portfolio">
 		<div id="portfolio-header"><h2>Mes Projets</h2>
-			<button id="modal-open-btn">
+			<button id="modal-open-btn" class="d-none">
 				<i class="fa-regular fa-pen-to-square"></i>
 				Modifier
 			</button></div>
@@ -76,7 +76,7 @@
 	</nav>
 </footer>
 
-<div id="myModal" class="modal d-none">
+<div class="modal d-none">
 
 	<!-- Modal content -->
 	<div class="modal-content">
@@ -86,8 +86,14 @@
 				<i class="fa-solid fa-xmark"></i>
 			</button>
 		</div>
+		<div class="modal-body">
+			<div class="works-container"></div>
+		</div>
+		<div class="modal-footer">
+			<button>Ajouter une photo</button>
+		</div>
 	</div>
-
 </div>
+
 </body>
 </html>
