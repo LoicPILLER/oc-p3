@@ -44,7 +44,7 @@
 	</section>
 	<section id="portfolio">
 		<div id="portfolio-header"><h2>Mes Projets</h2>
-			<button id="modal-open-btn" class="d-none">
+			<button id="modal-open-btn" class="action-btn d-none">
 				<i class="fa-regular fa-pen-to-square"></i>
 				Modifier
 			</button></div>
@@ -78,11 +78,10 @@
 
 <div class="modal d-none">
 
-	<!-- Modal content -->
-	<div class="modal-content">
+	<div class="modal-content" id="gallery-modal">
 		<div class="modal-header">
 			<h3>Galerie photo</h3>
-			<button id="modal-close-btn">
+			<button class="action-btn modal-close-btn" id="gallery-modal-close-btn">
 				<i class="fa-solid fa-xmark"></i>
 			</button>
 		</div>
@@ -90,9 +89,34 @@
 			<div class="works-container"></div>
 		</div>
 		<div class="modal-footer">
-			<button>Ajouter une photo</button>
+			<button id="add-picture-btn">Ajouter une photo</button>
 		</div>
 	</div>
+
+	<div class="modal-content d-none" id="add-picture-modal">
+		<div class="modal-header">
+			<button class="action-btn" id="add-picture-back-btn">
+				<i class="fa-solid fa-arrow-left"></i>
+			</button>
+			<h3>Ajouter une photo</h3>
+			<button class="action-btn modal-close-btn" id="add-picture-modal-close-btn">
+				<i class="fa-solid fa-xmark"></i>
+			</button>
+		</div>
+		<div class="modal-body">
+			<form action="#">
+				<label for="title">Titre</label>
+				<input type="text" name="title" id="title">
+				<label for="category">Catégorie</label>
+				<select name="category" id="category">
+				</select>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button id="add-picture-submit-btn">Valider</button>
+		</div>
+	</div>
+
 </div>
 
 </body>

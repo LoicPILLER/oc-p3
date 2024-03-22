@@ -41,6 +41,7 @@ async function displayWorks(element, categoryId = 0, options = {}){
     element.innerHTML = '';
     currentWorks.forEach((work) => {
         let figure = document.createElement("figure");
+        figure.setAttribute('data-id', work.id)
 
         let img = document.createElement("img");
         img.src = work.imageUrl;
@@ -51,6 +52,13 @@ async function displayWorks(element, categoryId = 0, options = {}){
 
         figure.appendChild(img);
         figure.appendChild(caption)
+
+        if (options['displayTrash'] === true) {
+            let trash = document.createElement("i");
+            trash.classList.add("fa-solid");
+            trash.classList.add("fa-trash-can");
+            figure.appendChild(trash);
+        }
 
         element.appendChild(figure);
     })
@@ -80,6 +88,29 @@ function initEditMode(){
     })
 }
 
+function switchToAddPicturePageModal() {
+    const dModal = document.querySelector('.modal');
+
+    const dGalleryModal = document.getElementById('gallery-modal');
+    dGalleryModal.classList.add('d-none');
+
+    const dAddPictureModal = document.getElementById('add-picture-modal');
+    dAddPictureModal.classList.remove('d-none');
+
+    const dBackBtn = document.getElementById('add-picture-back-btn');
+    dBackBtn.addEventListener('click', function (e){
+        dAddPictureModal.classList.add('d-none');
+        dGalleryModal.classList.remove('d-none');
+    })
+
+    const dModalCloseBtn = document.getElementById('add-picture-modal-close-btn');
+    dModalCloseBtn.addEventListener('click', function (e){
+        dAddPictureModal.classList.add('d-none');
+        dModal.classList.add('d-none');
+        dGalleryModal.classList.remove('d-none');
+    })
+}
+
 function initModal(){
 
     const dModal = document.querySelector('.modal');
@@ -92,9 +123,14 @@ function initModal(){
         displayWorks(dWorksContainer, 0, {'displayTrash' : true});
     })
 
-    const dModalCloseBtn = document.getElementById('modal-close-btn');
+    const dModalCloseBtn = document.getElementById('gallery-modal-close-btn');
     dModalCloseBtn.addEventListener('click', function (e){
         dModal.classList.add('d-none');
+    })
+
+    const dModalAddPictureBtn = document.getElementById('add-picture-btn');
+    dModalAddPictureBtn.addEventListener('click', function (e){
+        switchToAddPicturePageModal();
     })
 }
 
