@@ -6,6 +6,8 @@ const DLOGIN = document.getElementById('login');
 const DFILTERS = document.querySelector("#portfolio > .filters-container");
 const DGALLERY = document.querySelector("#portfolio > .gallery");
 
+let token = null;
+
 let works = [];
 
 async function getJson(url) {
@@ -13,18 +15,31 @@ async function getJson(url) {
     return await response.json();
 }
 
+async function postData(relativeUrl, data = {}) {
+    const url = APIURL + relativeUrl;
+    const method = data.method || "POST";
+    const token = data.token || null;
+
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            Authorization: token ? `Bearer ${token}` : undefined,
+            'Content-Type': 'application/json'
+        },
+    });
+
+    return response
+}
+
 async function displayCategories(){
     let categories = await getJson(APIURL + "/categories");
 
-    let n = 1;
     categories.forEach((category) => {
         let filterButton = document.createElement("button");
-        filterButton.setAttribute('data-id', n);
-        filterButton.innerText = categories[n-1].name;
+        filterButton.setAttribute('data-id', category.id);
+        filterButton.innerText = category.name;
 
         DFILTERS.appendChild(filterButton);
-
-        n += 1;
     })
 }
 
@@ -57,6 +72,7 @@ async function displayWorks(element, categoryId = 0, options = {}){
             let trash = document.createElement("i");
             trash.classList.add("fa-solid");
             trash.classList.add("fa-trash-can");
+            trash.classList.add("action-delete-work");
             figure.appendChild(trash);
         }
 
@@ -132,6 +148,21 @@ function initModal(){
     dModalAddPictureBtn.addEventListener('click', function (e){
         switchToAddPicturePageModal();
     })
+
+    dWorksContainer.addEventListener('click', async function (e) {
+        if (e.target.classList.contains('action-delete-work')) {
+            let workId = e.target.parentElement.dataset.id;
+
+             let response = await postData('/works/' + workId, {
+                 method: 'DELETE',
+                 token: token,
+             });
+
+            works = await getJson(APIURL + "/works");
+            displayWorks(dWorksContainer, 0, {'displayTrash' : true});
+            displayWorks(DGALLERY);
+        }
+    })
 }
 
 async function initPage(){
@@ -143,7 +174,8 @@ async function initPage(){
 
     initFilters();
 
-    if (localStorage.getItem('token')){
+    token = localStorage.getItem('token')
+    if (token){
         initEditMode();
         initModal();
     }
