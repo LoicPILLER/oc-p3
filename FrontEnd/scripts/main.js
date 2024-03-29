@@ -9,6 +9,7 @@ const DGALLERY = document.querySelector("#portfolio > .gallery");
 let token = null;
 
 let works = [];
+let categories = [];
 
 async function getJson(url) {
     const response = await fetch(url);
@@ -31,10 +32,17 @@ async function postData(relativeUrl, data = {}) {
     return response
 }
 
-async function displayCategories(){
-    let categories = await getJson(APIURL + "/categories");
-
+async function displayCategories(categoryInput = null){
     categories.forEach((category) => {
+        if (categoryInput) {
+            let newOption = document.createElement('option')
+            newOption.value = category.id;
+            newOption.innerText = category.name;
+
+            categoryInput.appendChild(newOption);
+            return;
+        }
+
         let filterButton = document.createElement("button");
         filterButton.setAttribute('data-id', category.id);
         filterButton.innerText = category.name;
@@ -113,10 +121,15 @@ function switchToAddPicturePageModal() {
     const dAddPictureModal = document.getElementById('add-picture-modal');
     dAddPictureModal.classList.remove('d-none');
 
+    const dPictureNotSelected = document.querySelector('.picture-not-selected');
+    const dSelectedPicture = document.querySelector('.select-picture img');
+
     const dBackBtn = document.getElementById('add-picture-back-btn');
     dBackBtn.addEventListener('click', function (e){
         dAddPictureModal.classList.add('d-none');
         dGalleryModal.classList.remove('d-none');
+        dPictureNotSelected.classList.remove('d-none');
+        dSelectedPicture.classList.add('d-none');
     })
 
     const dModalCloseBtn = document.getElementById('add-picture-modal-close-btn');
@@ -124,29 +137,36 @@ function switchToAddPicturePageModal() {
         dAddPictureModal.classList.add('d-none');
         dModal.classList.add('d-none');
         dGalleryModal.classList.remove('d-none');
+        dPictureNotSelected.classList.remove('d-none');
+        dSelectedPicture.classList.add('d-none');
     })
 
-    const dSelectPictureContainer = document.querySelector('.select-picture');
     const dFileInput = document.getElementById('fileInput');
     dFileInput.addEventListener('change', function (e) {
-        const dPictureNotSelected = document.querySelector('.picture-not-selected');
-        dPictureNotSelected.classList.add('d-none')
+        if (this.files[0].size > 4000000) {
+            return;
+        }
 
-        let selectedPicture = document.createElement('img');
-        selectedPicture.file = this.files[0];
-        dSelectPictureContainer.appendChild(selectedPicture);
+        const dPictureNotSelected = document.querySelector('.picture-not-selected');
+        dPictureNotSelected.classList.add('d-none');
+
+        dSelectedPicture.file = this.files[0];
 
         const reader = new FileReader();
         reader.onload = function (e) {
-            selectedPicture.src = e.target.result;
+            dSelectedPicture.src = e.target.result;
         }
         reader.readAsDataURL(this.files[0]);
+
+        dSelectedPicture.classList.remove('d-none');
     })
 
     const dSelectPictureBtn = document.getElementById('select-picture-btn');
     dSelectPictureBtn.addEventListener('click', function (e){
         dFileInput.click();
     })
+
+    displayCategories(document.getElementById('category-input'));
 }
 
 function initModal(){
@@ -190,6 +210,7 @@ function initModal(){
 async function initPage(){
 
     works = await getJson(APIURL + "/works");
+    categories = await getJson(APIURL + "/categories");
 
     displayWorks(DGALLERY);
     displayCategories();
