@@ -105,10 +105,18 @@
 		</div>
 		<div class="modal-body">
 			<form action="#">
-				<label for="title">Titre</label>
-				<input type="text" name="title" id="title">
-				<label for="category">Catégorie</label>
-				<select name="category" id="category">
+				<div class="select-picture">
+					<div class="picture-not-selected">
+						<i class="fa-regular fa-image"></i>
+						<input type="file" id="fileInput" multiple accept="image/*">
+						<button id="select-picture-btn">+ Ajouter photo</button>
+						<p>jpg, png : 4mo max</p>
+					</div>
+				</div>
+				<label for="title-input">Titre</label>
+				<input type="text" name="title" id="title-input">
+				<label for="category-input">Catégorie</label>
+				<select name="category" id="category-input">
 				</select>
 			</form>
 		</div>

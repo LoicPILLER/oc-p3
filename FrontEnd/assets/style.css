@@ -288,7 +288,7 @@ footer nav ul {
 }
 
 .modal-content {
-	background-color: var(--main-bg-color);
+	background-color: white;
 	margin: 15% auto;
 	border-radius: 15px;
 	width: 40%;
@@ -368,7 +368,7 @@ footer nav ul {
 	display: flex;
 	justify-content: center;
 	margin: 0 60px;
-	padding: 35px;
+	padding: 30px 60px;
 	border-top: 2px solid lightgrey;
 	z-index: 1;
 }
@@ -379,4 +379,47 @@ footer nav ul {
 	border-radius: 30px;
 	padding: 10px 35px;
 	border: none;
+}
+
+.modal-content form {
+	width: 100%;
+}
+
+.select-picture {
+	background-color: #E8F1F6;
+	border-radius: 5px;
+	display: flex;
+	justify-content: center;
+}
+
+.select-picture img {
+	max-height: 200px;
+}
+
+.picture-not-selected {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 10px;
+	width: 100%;
+	padding: 20px;
+}
+
+.picture-not-selected input[type='file'] {
+	display: none;
+}
+
+.picture-not-selected i {
+	font-size: 80px;
+	color: #CBD6DC;
+}
+
+#select-picture-btn {
+	background-color: #CBD6DC;
+	color: #306685;
+	border: none;
+	border-radius: 15px;
+	padding: 10px;
+	width: 50%;
 }

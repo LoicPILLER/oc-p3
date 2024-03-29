@@ -125,6 +125,28 @@ function switchToAddPicturePageModal() {
         dModal.classList.add('d-none');
         dGalleryModal.classList.remove('d-none');
     })
+
+    const dSelectPictureContainer = document.querySelector('.select-picture');
+    const dFileInput = document.getElementById('fileInput');
+    dFileInput.addEventListener('change', function (e) {
+        const dPictureNotSelected = document.querySelector('.picture-not-selected');
+        dPictureNotSelected.classList.add('d-none')
+
+        let selectedPicture = document.createElement('img');
+        selectedPicture.file = this.files[0];
+        dSelectPictureContainer.appendChild(selectedPicture);
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            selectedPicture.src = e.target.result;
+        }
+        reader.readAsDataURL(this.files[0]);
+    })
+
+    const dSelectPictureBtn = document.getElementById('select-picture-btn');
+    dSelectPictureBtn.addEventListener('click', function (e){
+        dFileInput.click();
+    })
 }
 
 function initModal(){
