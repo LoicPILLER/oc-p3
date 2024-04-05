@@ -20,21 +20,29 @@ async function postData(relativeUrl, data = {}) {
     const url = APIURL + relativeUrl;
     const method = data.method || "POST";
     const token = data.token || null;
+    const contentType = data.contentType || "application/json";
+    const body = data.body || null;
 
     const response = await fetch(url, {
         method: method,
         headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
-            'Content-Type': 'application/json'
+            'Content-Type': contentType
         },
+        body: body
     });
 
     return response
 }
 
 async function displayCategories(categoryInput = null){
+    if (categoryInput) {
+        categoryInput.innerHTML = "";
+    }
+
     categories.forEach((category) => {
         if (categoryInput) {
+
             let newOption = document.createElement('option')
             newOption.value = category.id;
             newOption.innerText = category.name;
@@ -128,8 +136,6 @@ function switchToAddPicturePageModal() {
     dBackBtn.addEventListener('click', function (e){
         dAddPictureModal.classList.add('d-none');
         dGalleryModal.classList.remove('d-none');
-        dPictureNotSelected.classList.remove('d-none');
-        dSelectedPicture.classList.add('d-none');
     })
 
     const dModalCloseBtn = document.getElementById('add-picture-modal-close-btn');
@@ -142,15 +148,14 @@ function switchToAddPicturePageModal() {
     })
 
     const dFileInput = document.getElementById('fileInput');
-    dFileInput.addEventListener('change', function (e) {
+    dFileInput.addEventListener('change', async function (e) {
         if (this.files[0].size > 4000000) {
+            console.log('file to large');
             return;
         }
 
         const dPictureNotSelected = document.querySelector('.picture-not-selected');
         dPictureNotSelected.classList.add('d-none');
-
-        dSelectedPicture.file = this.files[0];
 
         const reader = new FileReader();
         reader.onload = function (e) {
