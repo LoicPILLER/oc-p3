@@ -27,7 +27,7 @@ async function postData(relativeUrl, data = {}) {
         method: method,
         headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
-            'Content-Type': contentType
+            //'Content-Type': contentType
         },
         body: body
     });
@@ -63,6 +63,7 @@ async function displayWorks(element, categoryId = 0, options = {}){
 
     let currentWorks = [];
 
+    // Verifie si une categorie est spécifié si oui filtre les travaux
     if (categoryId !== 0) {
         currentWorks = works.filter((work) => work.categoryId === categoryId);
     } else {
@@ -121,6 +122,9 @@ function initEditMode(){
 }
 
 function switchToAddPicturePageModal() {
+
+    let selectedFile;
+
     const dModal = document.querySelector('.modal');
 
     const dGalleryModal = document.getElementById('gallery-modal');
@@ -149,10 +153,13 @@ function switchToAddPicturePageModal() {
 
     const dFileInput = document.getElementById('fileInput');
     dFileInput.addEventListener('change', async function (e) {
+
         if (this.files[0].size > 4000000) {
             console.log('file to large');
             return;
         }
+
+        selectedFile = this.files[0];
 
         const dPictureNotSelected = document.querySelector('.picture-not-selected');
         dPictureNotSelected.classList.add('d-none');
@@ -161,14 +168,41 @@ function switchToAddPicturePageModal() {
         reader.onload = function (e) {
             dSelectedPicture.src = e.target.result;
         }
-        reader.readAsDataURL(this.files[0]);
+        reader.readAsDataURL(selectedFile);
 
         dSelectedPicture.classList.remove('d-none');
     })
 
     const dSelectPictureBtn = document.getElementById('select-picture-btn');
     dSelectPictureBtn.addEventListener('click', function (e){
+        e.preventDefault();
         dFileInput.click();
+    })
+
+    document.getElementById('add-picture-submit-btn').addEventListener('click', async function (e){
+
+        const formData = new FormData;
+        formData.append('title', document.getElementById('title-input').value);
+        formData.append('category', document.getElementById('category-input').value);
+        formData.append('image', selectedFile);
+
+        console.log(await postData('/works', {
+            token: token,
+            contentType: 'multipart/form-data',
+            body: formData
+        }));
+
+        dPictureNotSelected.classList.remove('d-none');
+        dSelectedPicture.classList.add('d-none');
+
+        works = await getJson(APIURL + "/works");
+
+        displayWorks(DGALLERY);
+        const dModalWorksContainer = document.querySelector('.works-container');
+        displayWorks(dModalWorksContainer, 0, {'displayTrash' : true});
+
+        dAddPictureModal.classList.add('d-none');
+        dGalleryModal.classList.remove('d-none');
     })
 
     displayCategories(document.getElementById('category-input'));
@@ -177,13 +211,13 @@ function switchToAddPicturePageModal() {
 function initModal(){
 
     const dModal = document.querySelector('.modal');
-    const dWorksContainer = document.querySelector('.works-container');
+    const dModalWorksContainer = document.querySelector('.works-container');
 
     const dModalStartBtn = document.getElementById('modal-open-btn');
     dModalStartBtn.classList.remove('d-none');
     dModalStartBtn.addEventListener('click', function (e){
         dModal.classList.remove('d-none');
-        displayWorks(dWorksContainer, 0, {'displayTrash' : true});
+        displayWorks(dModalWorksContainer, 0, {'displayTrash' : true});
     })
 
     const dModalCloseBtn = document.getElementById('gallery-modal-close-btn');
@@ -196,7 +230,7 @@ function initModal(){
         switchToAddPicturePageModal();
     })
 
-    dWorksContainer.addEventListener('click', async function (e) {
+    dModalWorksContainer.addEventListener('click', async function (e) {
         if (e.target.classList.contains('action-delete-work')) {
             let workId = e.target.parentElement.dataset.id;
 
@@ -206,7 +240,7 @@ function initModal(){
              });
 
             works = await getJson(APIURL + "/works");
-            displayWorks(dWorksContainer, 0, {'displayTrash' : true});
+            displayWorks(dModalWorksContainer, 0, {'displayTrash' : true});
             displayWorks(DGALLERY);
         }
     })
