@@ -10,6 +10,7 @@ let token = null;
 
 let works = [];
 let categories = [];
+let selectedFile = null;
 
 async function getJson(url) {
     const response = await fetch(url);
@@ -123,95 +124,29 @@ function initEditMode(){
 
 function switchToAddPicturePageModal() {
 
-    let selectedFile;
-
-    const dModal = document.querySelector('.modal');
-
     const dGalleryModal = document.getElementById('gallery-modal');
     dGalleryModal.classList.add('d-none');
 
     const dAddPictureModal = document.getElementById('add-picture-modal');
     dAddPictureModal.classList.remove('d-none');
 
-    const dPictureNotSelected = document.querySelector('.picture-not-selected');
-    const dSelectedPicture = document.querySelector('.select-picture img');
-
-    const dBackBtn = document.getElementById('add-picture-back-btn');
-    dBackBtn.addEventListener('click', function (e){
-        dAddPictureModal.classList.add('d-none');
-        dGalleryModal.classList.remove('d-none');
-    })
-
-    const dModalCloseBtn = document.getElementById('add-picture-modal-close-btn');
-    dModalCloseBtn.addEventListener('click', function (e){
-        dAddPictureModal.classList.add('d-none');
-        dModal.classList.add('d-none');
-        dGalleryModal.classList.remove('d-none');
-        dPictureNotSelected.classList.remove('d-none');
-        dSelectedPicture.classList.add('d-none');
-    })
-
-    const dFileInput = document.getElementById('fileInput');
-    dFileInput.addEventListener('change', async function (e) {
-
-        if (this.files[0].size > 4000000) {
-            console.log('file to large');
-            return;
-        }
-
-        selectedFile = this.files[0];
-
-        const dPictureNotSelected = document.querySelector('.picture-not-selected');
-        dPictureNotSelected.classList.add('d-none');
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            dSelectedPicture.src = e.target.result;
-        }
-        reader.readAsDataURL(selectedFile);
-
-        dSelectedPicture.classList.remove('d-none');
-    })
-
-    const dSelectPictureBtn = document.getElementById('select-picture-btn');
-    dSelectPictureBtn.addEventListener('click', function (e){
-        e.preventDefault();
-        dFileInput.click();
-    })
-
-    document.getElementById('add-picture-submit-btn').addEventListener('click', async function (e){
-
-        const formData = new FormData;
-        formData.append('title', document.getElementById('title-input').value);
-        formData.append('category', document.getElementById('category-input').value);
-        formData.append('image', selectedFile);
-
-        console.log(await postData('/works', {
-            token: token,
-            contentType: 'multipart/form-data',
-            body: formData
-        }));
-
-        dPictureNotSelected.classList.remove('d-none');
-        dSelectedPicture.classList.add('d-none');
-
-        works = await getJson(APIURL + "/works");
-
-        displayWorks(DGALLERY);
-        const dModalWorksContainer = document.querySelector('.works-container');
-        displayWorks(dModalWorksContainer, 0, {'displayTrash' : true});
-
-        dAddPictureModal.classList.add('d-none');
-        dGalleryModal.classList.remove('d-none');
-    })
-
-    displayCategories(document.getElementById('category-input'));
 }
 
-function initModal(){
+function resetAddPicturePageModal(dErrorMessage, dAddPictureModal, dPictureNotSelected, dSelectedPicture) {
+    selectedFile = null;
+    document.getElementById('title-input').value = null;
+    dErrorMessage.classList.add('d-none');
+    dAddPictureModal.classList.add('d-none');
+    dPictureNotSelected.classList.remove('d-none');
+    dSelectedPicture.classList.add('d-none');
+}
+
+function initModals(){
 
     const dModal = document.querySelector('.modal');
     const dModalWorksContainer = document.querySelector('.works-container');
+
+    const dGalleryModal = document.getElementById('gallery-modal');
 
     const dModalStartBtn = document.getElementById('modal-open-btn');
     dModalStartBtn.classList.remove('d-none');
@@ -220,7 +155,7 @@ function initModal(){
         displayWorks(dModalWorksContainer, 0, {'displayTrash' : true});
     })
 
-    const dModalCloseBtn = document.getElementById('gallery-modal-close-btn');
+    let dModalCloseBtn = document.getElementById('gallery-modal-close-btn');
     dModalCloseBtn.addEventListener('click', function (e){
         dModal.classList.add('d-none');
     })
@@ -244,6 +179,93 @@ function initModal(){
             displayWorks(DGALLERY);
         }
     })
+
+
+    // Init add picture modal
+
+    const dAddPictureModal = document.getElementById('add-picture-modal');
+
+    const dErrorMessage = document.querySelector('#add-picture-modal .error-message');
+
+    const dPictureNotSelected = document.querySelector('.picture-not-selected');
+    const dSelectedPicture = document.querySelector('.select-picture img');
+
+    displayCategories(document.getElementById('category-input'));
+
+    const dFileInput = document.getElementById('fileInput');
+    dFileInput.addEventListener('change', function (e) {
+
+        if (this.files[0].size > 4000000) {
+            console.log('file to large');
+            return;
+        }
+
+        selectedFile = this.files[0];
+        dFileInput.value = '';
+
+        const dPictureNotSelected = document.querySelector('.picture-not-selected');
+        dPictureNotSelected.classList.add('d-none');
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            dSelectedPicture.src = e.target.result;
+        }
+        reader.readAsDataURL(selectedFile);
+
+        dSelectedPicture.classList.remove('d-none');
+    })
+
+    const dSelectPictureBtn = document.getElementById('select-picture-btn');
+    dSelectPictureBtn.addEventListener('click', function (e){
+        e.preventDefault();
+        dFileInput.click();
+    })
+
+    document.getElementById('add-picture-submit-btn').addEventListener('click', async function (e){
+
+       const formData = new FormData;
+        formData.append('title', document.getElementById('title-input').value);
+        formData.append('category', document.getElementById('category-input').value);
+        formData.append('image', selectedFile);
+
+        if (selectedFile == null || formData.get('title') === '') {
+            dErrorMessage.innerText = 'Erreur : Formulaire invalide';
+            dErrorMessage.classList.remove('d-none');
+            return false;
+        }
+
+        console.log(await postData('/works', {
+            token: token,
+            contentType: 'multipart/form-data',
+            body: formData
+        }));
+
+        dPictureNotSelected.classList.remove('d-none');
+        dSelectedPicture.classList.add('d-none');
+
+        works = await getJson(APIURL + "/works");
+
+        displayWorks(DGALLERY);
+        displayWorks(dModalWorksContainer, 0, {'displayTrash' : true});
+
+        resetAddPicturePageModal(dErrorMessage, dAddPictureModal, dPictureNotSelected, dSelectedPicture);
+        dGalleryModal.classList.remove('d-none');
+    })
+
+    const dBackBtn = document.getElementById('add-picture-back-btn');
+    dBackBtn.addEventListener('click', function (e){
+        dAddPictureModal.classList.add('d-none');
+        dGalleryModal.classList.remove('d-none');
+        dErrorMessage.classList.add('d-none');
+    })
+
+    dModalCloseBtn = document.getElementById('add-picture-modal-close-btn');
+    dModalCloseBtn.addEventListener('click', function (e){
+        resetAddPicturePageModal(dErrorMessage, dAddPictureModal, dPictureNotSelected, dSelectedPicture);
+        dModal.classList.add('d-none');
+        dGalleryModal.classList.remove('d-none');
+        dErrorMessage.classList.add('d-none');
+    })
 }
 
 async function initPage(){
@@ -259,7 +281,7 @@ async function initPage(){
     token = localStorage.getItem('token')
     if (token){
         initEditMode();
-        initModal();
+        initModals();
     }
 }
 
